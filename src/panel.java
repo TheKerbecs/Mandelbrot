@@ -6,6 +6,7 @@ import java.awt.event.ActionListener;
 import static java.awt.event.KeyEvent.VK_A;
 import static java.awt.event.KeyEvent.VK_D;
 import static java.awt.event.KeyEvent.VK_S;
+import static java.awt.event.KeyEvent.VK_SPACE;
 import static java.awt.event.KeyEvent.VK_W;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
@@ -26,31 +27,33 @@ public class panel extends javax.swing.JPanel {
      * Creates new form panel
      */
     BufferedImage bim;
-    static final int MAX_ITER = 500;
-    static final double DEFAULTZOOM = 100.0;
-    static final double DEFAULTTOPLEFTX = -5.0;
-    static final double DEFAULTTOPLEFTY = +5.0;
+    static final int MAX_ITER = 1000;
+    static final double DEFAULTZOOM = 300.0;
+    static final double DEFAULTTOPLEFTX = -3.5;
+    static final double DEFAULTTOPLEFTY = +1.6;
     double zoomFactor = DEFAULTZOOM;
     double topLeftX = DEFAULTTOPLEFTX;
     double topLeftY = DEFAULTTOPLEFTY;
-    int WIDTH = 1000, HEIGHT = 1000;
-    double x = 531.3;
-    double y = 450.2;
+    int WIDTH = 1792, HEIGHT = 1008;
+    //double x = 531.3;
+    //double y = 450.2;
+    double x = WIDTH/2;
+    double y = HEIGHT/2;
     private frame fr;
     Timer Timr;
-    int delay = 1000;
+    int delay = 10;
 
     public panel() {
         initComponents();
         this.setFocusable(true);
         this.requestFocus();
-        bim = new BufferedImage(HEIGHT, WIDTH, BufferedImage.TYPE_INT_RGB);
+        bim = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
         Timr = new Timer(delay, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 adjustZoom(x, y, zoomFactor * 1.2f);
-                x = 500;
-                y = 500;
+                x = WIDTH/2;;
+                y = HEIGHT/2;
             }
         });
 
@@ -71,7 +74,8 @@ public class panel extends javax.swing.JPanel {
                 bim.setRGB(x, y, pixelColor);
             }
         }
-        fr.setTitle("Zoom: " + Double.toString(zoomFactor) + "%" + "    lmb zoom in, rmb zoom out, wasd to move");
+        String timerRunning = Timr.isRunning() ? "Running":"Stopped";
+        fr.setTitle("Zoom: " + Integer.toString((int)zoomFactor) + "%" + "    lmb zoom in, rmb zoom out, wasd to move" + "Timer: " + timerRunning );
         repaint();
     }
 
@@ -114,26 +118,26 @@ public class panel extends javax.swing.JPanel {
 
     private void moveUp() {
         double curHeight = HEIGHT / zoomFactor;
-        topLeftY += curHeight / 6;
+        topLeftY += curHeight / 8;
         updateFractal();
      
     }
 
     private void moveDown() {
         double curHeight = HEIGHT / zoomFactor;
-        topLeftY -= curHeight / 6;
+        topLeftY -= curHeight / 10;
         updateFractal();
     }
 
     private void moveLeft() {
         double curWidth = WIDTH / zoomFactor;
-        topLeftX -= curWidth / 6;
+        topLeftX -= curWidth / 10;
         updateFractal();
     }
 
     private void moveRight() {
         double curWidth = WIDTH / zoomFactor;
-        topLeftX += curWidth / 6;
+        topLeftX += curWidth /10;
         updateFractal();
     }
 
@@ -199,6 +203,12 @@ public class panel extends javax.swing.JPanel {
             case VK_D:
                 moveRight();
                 break;
+           case VK_SPACE:
+               if(!Timr.isRunning()){
+                   Timr.start();
+               }else {
+                   Timr.stop();
+               }
         }
     }//GEN-LAST:event_formKeyPressed
 
@@ -214,6 +224,7 @@ public class panel extends javax.swing.JPanel {
             case MouseEvent.BUTTON3:
                 adjustZoom(x, y, zoomFactor / 2);
                 break;
+            
         }
 
     }//GEN-LAST:event_formMousePressed

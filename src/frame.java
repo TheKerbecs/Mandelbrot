@@ -15,10 +15,10 @@ public class frame extends javax.swing.JFrame {
      */
     public frame() {
         initComponents();
-        this.setSize(1000, 1000);
+        this.setSize(1792,1008);
         this.setResizable(false);
         panel1.setFrame(this);
-        this.setTitle("Leyver");
+        this.setTitle("Mandelbrot");
     }
 
     /**
@@ -38,11 +38,11 @@ public class frame extends javax.swing.JFrame {
         panel1.setLayout(panel1Layout);
         panel1Layout.setHorizontalGroup(
             panel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 416, Short.MAX_VALUE)
+            .addGap(0, 1920, Short.MAX_VALUE)
         );
         panel1Layout.setVerticalGroup(
             panel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 353, Short.MAX_VALUE)
+            .addGap(0, 1080, Short.MAX_VALUE)
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
