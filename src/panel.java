@@ -35,8 +35,6 @@ public class panel extends javax.swing.JPanel {
     double topLeftX = DEFAULTTOPLEFTX;
     double topLeftY = DEFAULTTOPLEFTY;
     int WIDTH = 1792, HEIGHT = 1008;
-    //double x = 531.3;
-    //double y = 450.2;
     double x = WIDTH/2;
     double y = HEIGHT/2;
     private frame fr;
