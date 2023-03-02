@@ -1,5 +1,5 @@
 
-import com.sun.prism.paint.Color;
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -43,7 +43,7 @@ public class panel extends javax.swing.JPanel {
     private frame fr;
     Timer Timr;
     int delay = 100;
-    
+
     public panel() {
         initComponents();
         this.setFocusable(true);
@@ -52,7 +52,7 @@ public class panel extends javax.swing.JPanel {
         Timr = new Timer(delay, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                adjustZoom(WIDTH/2, HEIGHT/2, zoomFactor * 1.2f);
+                adjustZoom(WIDTH / 2, HEIGHT / 2, zoomFactor * 1.2f);
             }
         });
 
@@ -89,8 +89,9 @@ public class panel extends javax.swing.JPanel {
                             double c_r = getXPos(x);
                             double c_i = getYPos(y);
                             int iterCount = computeIterations(c_r, c_i);
-                            int pixelColor = makeColor(iterCount);
+                            int pixelColor = getColor(iterCount);
                             bim.setRGB(x, y, pixelColor);
+
                         }
                     }
                 }
@@ -107,7 +108,7 @@ public class panel extends javax.swing.JPanel {
         repaint();
     }
 
-    private int makeColor(int iterCount) {
+    /*  private int makeColor(int iterCount) {
 
         int color = 0b011011100001100101101000;
         int mask = 0b000000000000010101110111;
@@ -118,6 +119,16 @@ public class panel extends javax.swing.JPanel {
         }
 
         return color | (mask << shiftMag);
+    }*/
+    public static int getColor(int iterations) {
+        // If the point is in the Mandelbrot set, assign it the color black
+        if (iterations == MAX_ITER) {
+            return Color.BLACK.getRGB();
+        }
+        // If the point has escaped to infinity, assign it a color based on the number of iterations
+        double hue = (double) iterations / MAX_ITER; // Scale the iteration count to a hue value between 0 and 1
+        Color color = Color.getHSBColor((float) hue, 0.8f, 0.9f); // Convert the hue value to an RGB color using the HSB color model
+        return color.getRGB(); // Return the integer value of the color
     }
 
     private double getXPos(double x) {
