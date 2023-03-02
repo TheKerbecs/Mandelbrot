@@ -10,6 +10,9 @@ import static java.awt.event.KeyEvent.VK_SPACE;
 import static java.awt.event.KeyEvent.VK_W;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import javax.swing.Timer;
 
 /*
@@ -35,12 +38,12 @@ public class panel extends javax.swing.JPanel {
     double topLeftX = DEFAULTTOPLEFTX;
     double topLeftY = DEFAULTTOPLEFTY;
     int WIDTH = 1792, HEIGHT = 1008;
-    double x = WIDTH/2;
-    double y = HEIGHT/2;
+    double x = WIDTH / 2;
+    double y = HEIGHT / 2;
     private frame fr;
     Timer Timr;
-    int delay = 10;
-
+    int delay = 100;
+    
     public panel() {
         initComponents();
         this.setFocusable(true);
@@ -49,9 +52,7 @@ public class panel extends javax.swing.JPanel {
         Timr = new Timer(delay, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                adjustZoom(x, y, zoomFactor * 1.2f);
-                x = WIDTH/2;;
-                y = HEIGHT/2;
+                adjustZoom(WIDTH/2, HEIGHT/2, zoomFactor * 1.2f);
             }
         });
 
@@ -62,7 +63,7 @@ public class panel extends javax.swing.JPanel {
         updateFractal();
     }
 
-    private void updateFractal() {
+    /*public  void updateFractal() {
         for (int x = 0; x < WIDTH; x++) {
             for (int y = 0; y < HEIGHT; y++) {
                 double c_r = getXPos(x);
@@ -74,6 +75,35 @@ public class panel extends javax.swing.JPanel {
         }
         String timerRunning = Timr.isRunning() ? "Running":"Stopped";
         fr.setTitle("Zoom: " + Integer.toString((int)zoomFactor) + "%" + "    lmb zoom in, rmb zoom out, wasd to move" + "Timer: " + timerRunning );
+        repaint();
+    }*/
+    public void updateFractal() {
+        int numThreads = Runtime.getRuntime().availableProcessors();
+        ExecutorService executor = Executors.newFixedThreadPool(numThreads);
+        for (int i = 0; i < numThreads; i++) {
+            final int threadIndex = i;
+            executor.execute(new Runnable() {
+                public void run() {
+                    for (int x = threadIndex; x < WIDTH; x += numThreads) {
+                        for (int y = 0; y < HEIGHT; y++) {
+                            double c_r = getXPos(x);
+                            double c_i = getYPos(y);
+                            int iterCount = computeIterations(c_r, c_i);
+                            int pixelColor = makeColor(iterCount);
+                            bim.setRGB(x, y, pixelColor);
+                        }
+                    }
+                }
+            });
+        }
+        executor.shutdown();
+        try {
+            executor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        String timerRunning = Timr.isRunning() ? "Running" : "Stopped";
+        fr.setTitle("Zoom: " + Integer.toString((int) zoomFactor) + "%" + "    lmb zoom in, rmb zoom out, wasd to move" + "Timer: " + timerRunning);
         repaint();
     }
 
@@ -118,7 +148,7 @@ public class panel extends javax.swing.JPanel {
         double curHeight = HEIGHT / zoomFactor;
         topLeftY += curHeight / 8;
         updateFractal();
-     
+
     }
 
     private void moveDown() {
@@ -135,7 +165,7 @@ public class panel extends javax.swing.JPanel {
 
     private void moveRight() {
         double curWidth = WIDTH / zoomFactor;
-        topLeftX += curWidth /10;
+        topLeftX += curWidth / 10;
         updateFractal();
     }
 
@@ -186,7 +216,7 @@ public class panel extends javax.swing.JPanel {
     }//GEN-LAST:event_formMouseClicked
 
     private void formKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_formKeyPressed
-        
+
 //        Timr.start();
         switch (evt.getExtendedKeyCode()) {
             case VK_W:
@@ -201,12 +231,12 @@ public class panel extends javax.swing.JPanel {
             case VK_D:
                 moveRight();
                 break;
-           case VK_SPACE:
-               if(!Timr.isRunning()){
-                   Timr.start();
-               }else {
-                   Timr.stop();
-               }
+            case VK_SPACE:
+                if (!Timr.isRunning()) {
+                    Timr.start();
+                } else {
+                    Timr.stop();
+                }
         }
     }//GEN-LAST:event_formKeyPressed
 
@@ -217,25 +247,25 @@ public class panel extends javax.swing.JPanel {
         this.y = y;
         switch (evt.getButton()) {
             case MouseEvent.BUTTON1:
-                if(!Timr.isRunning()){
+                if (!Timr.isRunning()) {
                     adjustZoom(x, y, zoomFactor * 1.2f);
-                }else{
+                } else {
                     adjustZoom(x, y, zoomFactor);
                 }
                 break;
             case MouseEvent.BUTTON3:
-                if(!Timr.isRunning()){
+                if (!Timr.isRunning()) {
                     adjustZoom(x, y, zoomFactor / 2);
-                }else{
+                } else {
                     adjustZoom(x, y, zoomFactor);
                 }
                 break;
-            
+
         }
 
     }//GEN-LAST:event_formMousePressed
 
-    private void adjustZoom(double x, double y, double d) {
+    public synchronized void adjustZoom(double x, double y, double d) {
 
         topLeftX += x / zoomFactor;
         topLeftY -= y / zoomFactor;
