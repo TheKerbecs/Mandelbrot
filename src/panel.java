@@ -219,10 +219,18 @@ public class panel extends javax.swing.JPanel {
         this.y = y;
         switch (evt.getButton()) {
             case MouseEvent.BUTTON1:
-                adjustZoom(x, y, zoomFactor * 1.2f);
+                if(!Timr.isRunning()){
+                    adjustZoom(x, y, zoomFactor * 1.2f);
+                }else{
+                    adjustZoom(x, y, zoomFactor);
+                }
                 break;
             case MouseEvent.BUTTON3:
-                adjustZoom(x, y, zoomFactor / 2);
+                if(!Timr.isRunning()){
+                    adjustZoom(x, y, zoomFactor / 2);
+                }else{
+                    adjustZoom(x, y, zoomFactor);
+                }
                 break;
             
         }
