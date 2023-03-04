@@ -1,10 +1,11 @@
 
-import java.awt.Color;
+import com.sun.prism.paint.Color;
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import static java.awt.event.KeyEvent.VK_A;
 import static java.awt.event.KeyEvent.VK_D;
+import static java.awt.event.KeyEvent.VK_R;
 import static java.awt.event.KeyEvent.VK_S;
 import static java.awt.event.KeyEvent.VK_SPACE;
 import static java.awt.event.KeyEvent.VK_W;
@@ -40,6 +41,7 @@ public class panel extends javax.swing.JPanel {
     int WIDTH = 1792, HEIGHT = 1008;
     double x = WIDTH / 2;
     double y = HEIGHT / 2;
+    boolean zoomIn = true;
     private frame fr;
     Timer Timr;
     int delay = 100;
@@ -52,7 +54,7 @@ public class panel extends javax.swing.JPanel {
         Timr = new Timer(delay, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                adjustZoom(WIDTH / 2, HEIGHT / 2, zoomFactor * 1.2f);
+                adjustZoom(WIDTH / 2, HEIGHT / 2, zoomFactor * (zoomIn ? 1.2f: 0.8f));
             }
         });
 
@@ -89,7 +91,7 @@ public class panel extends javax.swing.JPanel {
                             double c_r = getXPos(x);
                             double c_i = getYPos(y);
                             int iterCount = computeIterations(c_r, c_i);
-                            int pixelColor = getColor(iterCount);
+                            int pixelColor = makeColor(iterCount);
                             bim.setRGB(x, y, pixelColor);
 
                         }
@@ -104,11 +106,11 @@ public class panel extends javax.swing.JPanel {
             e.printStackTrace();
         }
         String timerRunning = Timr.isRunning() ? "Running" : "Stopped";
-        fr.setTitle("Zoom: " + Integer.toString((int) zoomFactor) + "%" + "    lmb zoom in, rmb zoom out, wasd to move" + "Timer: " + timerRunning);
+        fr.setTitle("Zoom: " + Double.toString( zoomFactor) + "%" + "    lmb zoom in, rmb zoom out, wasd to move" + "Timer: " + timerRunning + "ZoomIn: " + zoomIn);
         repaint();
     }
 
-    /*  private int makeColor(int iterCount) {
+     private int makeColor(int iterCount) {
 
         int color = 0b011011100001100101101000;
         int mask = 0b000000000000010101110111;
@@ -119,8 +121,8 @@ public class panel extends javax.swing.JPanel {
         }
 
         return color | (mask << shiftMag);
-    }*/
-    public static int getColor(int iterations) {
+    }
+   /* public static int makeColor(int iterations) {
         // If the point is in the Mandelbrot set, assign it the color black
         if (iterations == MAX_ITER) {
             return Color.BLACK.getRGB();
@@ -129,7 +131,7 @@ public class panel extends javax.swing.JPanel {
         double hue = (double) iterations / MAX_ITER; // Scale the iteration count to a hue value between 0 and 1
         Color color = Color.getHSBColor((float) hue, 0.8f, 0.9f); // Convert the hue value to an RGB color using the HSB color model
         return color.getRGB(); // Return the integer value of the color
-    }
+    }*/
 
     private double getXPos(double x) {
         return x / zoomFactor + topLeftX;
@@ -248,6 +250,10 @@ public class panel extends javax.swing.JPanel {
                 } else {
                     Timr.stop();
                 }
+                break;
+            case VK_R:
+                zoomIn = !zoomIn;
+                break;
         }
     }//GEN-LAST:event_formKeyPressed
 
