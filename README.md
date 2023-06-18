@@ -3,5 +3,5 @@ It is a simple visualization that is capable of zooming in on any part of the im
 ![mandelbrot](https://github.com/TheKerbecs/Mandelbrot/assets/116496200/b12f818e-ada7-4bcc-83a0-a2472e8f5fe9)
 
 
-Uploading 2023-03-04_16-41-38.mp4…
+https://github.com/TheKerbecs/Mandelbrot/assets/116496200/c25b9356-2acb-42c3-b775-5b85d7e3f7e0
 
